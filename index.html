@@ -1,97 +1,81 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VeriStamp | لوحة التوليد المحمية</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>VeriStamp | Protected Author Gateway</title>
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <!-- DOMPurify for secure sanitization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
+    <script src="./assets/js/crypto-core.js" defer></script>
+    <script src="./assets/js/generator.js" defer></script>
 </head>
-<body class="p-4 md:p-8">
+<body>
 
-    <header class="max-w-4xl mx-auto w-full py-4 flex justify-between items-center border-b border-slate-800/80">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-lg shadow-inner">🛡️</div>
-            <div>
-                <h1 class="text-lg font-extrabold tracking-wide text-white">VeriStamp</h1>
-                <p class="text-[10px] text-slate-400 uppercase tracking-widest">Protected Author Gateway</p>
+    <header>
+        <div class="brand">
+            <div class="brand-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
+            <span class="brand-title">VeriStamp</span>
         </div>
-        <a href="verify.html" class="bg-slate-800/80 hover:bg-slate-700 text-xs px-4 py-2 rounded-xl text-emerald-300 border border-slate-700 transition flex items-center gap-1.5 glow-btn">
-            <span>🔍</span> مركز التحقق العام
-        </a>
+        <a href="./verify.html" class="nav-badge">Verify Portal ↗</a>
     </header>
 
-    <!-- Author Password Lock Screen -->
-    <div id="lock-screen" class="max-w-md mx-auto my-24 glass-card p-8 rounded-3xl text-center space-y-5">
-        <div class="w-14 h-14 bg-rose-500/10 border border-rose-500/30 rounded-2xl mx-auto flex items-center justify-center text-rose-400 text-2xl shadow-inner">🔒</div>
-        <div>
-            <h2 class="text-lg font-bold text-white mb-1">منطقة محمية للمالك حصراً</h2>
-            <p class="text-xs text-slate-400">أدخل كلمة المرور السرية لفتح لوحة التوليد والتوقيع</p>
-        </div>
-        <input type="password" id="master-password" placeholder="كلمة المرور السرية..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-3.5 text-white text-center tracking-widest focus:outline-none focus:border-emerald-500 text-sm shadow-inner transition">
-        <button id="unlock-btn" type="button" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-xl glow-btn transition cursor-pointer shadow-lg shadow-emerald-900/20">
-            فتح اللوحة 🔓
-        </button>
-        <p id="lock-error" class="text-xs text-rose-400 hidden">كلمة المرور غير صحيحة!</p>
-    </div>
-
-    <!-- Main Generator Card (Hidden by Default) -->
-    <main id="generator-container" class="max-w-4xl mx-auto w-full my-8 space-y-6 hidden">
-        <div class="glass-card p-6 md:p-8 rounded-3xl">
-            <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800/60">
-                <div class="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-base">✍️</div>
-                <div>
-                    <h2 class="text-base font-bold text-white">إنشاء توقيع ورسالة موثوقة</h2>
-                    <p class="text-xs text-slate-400">توليد بصمة رقمية لا يمكن تعديلها أو تزييفها</p>
-                </div>
+    <main>
+        <!-- Lock Screen Gateway -->
+        <div id="lock-screen" class="glass-card">
+            <div class="card-icon-wrapper">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
+            <h1 class="card-title">Restricted Access</h1>
+            <p class="card-subtitle">Enter master credentials to initialize cryptographic engine.</p>
             
-            <div class="space-y-5">
-                <div>
-                    <label class="block text-xs font-semibold mb-2 text-slate-300 uppercase tracking-wider">اسم المؤلف المعتمد (Author):</label>
-                    <select id="author-input" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-3.5 text-white focus:outline-none focus:border-emerald-500 font-mono text-sm shadow-inner transition">
-                        <option value="AJ">AJ (ABDELWADOUD JBEL)</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold mb-2 text-slate-300 uppercase tracking-wider">محتوى الرسالة (Message Payload):</label>
-                    <textarea id="message-input" rows="4" placeholder="اكتب نص الرسالة التي تريد تأمينها وحمايتها هنا..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl p-3.5 text-white focus:outline-none focus:border-emerald-500 text-sm leading-relaxed shadow-inner transition"></textarea>
-                </div>
-
-                <div id="error-msg" class="hidden text-xs text-rose-400 bg-rose-950/40 border border-rose-800/60 p-3.5 rounded-xl flex items-center gap-2">
-                    <span>⚠️</span> <span id="error-text"></span>
-                </div>
-
-                <button id="generate-btn" type="button" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-6 rounded-xl glow-btn flex items-center justify-center gap-2.5 cursor-pointer shadow-lg shadow-emerald-900/20">
-                    <span>🔐</span> توليد البصمة الرقمية وختم الحماية
-                </button>
+            <div id="lock-error" class="error-alert hidden">Invalid master password. Access denied.</div>
+            
+            <div class="input-group">
+                <label for="master-password">Master Password</label>
+                <input type="password" id="master-password" class="control-item" placeholder="Enter secure passphrase...">
             </div>
+            <button id="unlock-btn" class="btn-primary">Unlock Dashboard</button>
         </div>
 
-        <!-- Output Result Section -->
-        <div id="output-section" class="hidden glass-card p-6 md:p-8 rounded-3xl border-emerald-500/30 space-y-4 animate-fadeIn">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-800/60">
-                <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-                    <span>📋</span>
-                    <span>النص النهائي الجاهز للنسخ في واتساب:</span>
-                </div>
-                <button id="copy-btn" type="button" class="bg-slate-800 hover:bg-slate-700 text-xs px-4 py-2 rounded-xl text-emerald-300 border border-slate-700 transition flex items-center gap-1.5 cursor-pointer glow-btn">
-                    <span>📑</span> نسخ الكل
-                </button>
+        <!-- Generator Dashboard (Hidden by default) -->
+        <div id="generator-container" class="glass-card hidden">
+            <h1 class="card-title" style="text-align: left; margin-bottom: 0.25rem;">Cryptographic Issuer</h1>
+            <p class="card-subtitle" style="text-align: left;">Generate cryptographically signed and immutable messages.</p>
+
+            <div id="error-msg" class="error-alert hidden">
+                <span id="error-text"></span>
             </div>
-            <pre id="final-output" class="bg-slate-950/80 p-4.5 rounded-2xl text-slate-300 font-mono text-xs overflow-x-auto whitespace-pre-wrap border border-slate-800/80 leading-relaxed shadow-inner"></pre>
+
+            <div class="input-group">
+                <label for="author-input">Author Identity</label>
+                <input type="text" id="author-input" class="control-item" value="AJ" readonly>
+            </div>
+
+            <div class="input-group">
+                <label for="message-input">Secure Payload Content</label>
+                <textarea id="message-input" class="control-item" placeholder="Type verified announcement or statement..."></textarea>
+            </div>
+
+            <button id="generate-btn" class="btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Sign & Stamp Message
+            </button>
+
+            <div id="output-section" class="hidden">
+                <div class="output-box">
+                    <pre id="final-output"></pre>
+                </div>
+                <button id="copy-btn" class="btn-secondary">Copy Signed Block</button>
+            </div>
         </div>
     </main>
 
-    <footer class="max-w-4xl mx-auto w-full text-center text-xs text-slate-500 py-6 border-t border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-2">
-        <p>VeriStamp Cryptographic Engine &copy; 2026. All Rights Reserved.</p>
-        <p class="text-emerald-400/80 font-mono">100% Zero-Trust Serverless Security</p>
+    <footer>
+        VeriStamp Cryptographic Engine &copy; 2026. <span>Zero-Trust Serverless 100%</span>
     </footer>
 
-    <script src="assets/js/crypto-core.js"></script>
-    <script src="assets/js/generator.js"></script>
 </body>
 </html>
