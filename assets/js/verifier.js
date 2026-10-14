@@ -13,26 +13,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Parsing block fields
-            const lines = rawText.split('\n');
-            let msg = "", auth = "", time = "", hash = "", sig = "";
+            // Extract fields using robust regex parsing to handle wrapped lines
+            const msgMatch = rawText.match(/MSG:\s*([\s\S]*?)(?=\nAUTH:|$)/);
+            const authMatch = rawText.match(/AUTH:\s*([^\n]+)/);
+            const timeMatch = rawText.match(/TIME:\s*([^\n]+)/);
+            const hashMatch = rawText.match(/HASH:\s*([a-fA-F0-9]{64})/);
+            
+            // For signature, capture everything between SIG: and VERIFY:
+            const sigMatch = rawText.match(/SIG:\s*([\s\S]*?)(?=\nVERIFY:|$)/);
 
-            for (let line of lines) {
-                if (line.startsWith("MSG: ")) msg = line.substring(5).trim();
-                if (line.startsWith("AUTH: ")) auth = line.substring(6).trim();
-                if (line.startsWith("TIME: ")) time = line.substring(6).trim();
-                if (line.startsWith("HASH: ")) hash = line.substring(6).trim();
-                if (line.startsWith("SIG: ")) sig = line.substring(5).trim();
-            }
-
-            if (!msg || !auth || !time || !hash || !sig) {
+            if (!msgMatch || !authMatch || !timeMatch || !hashMatch || !sigMatch) {
                 showResult(false, "Invalid block format. Missing required cryptographic parameters.");
                 return;
             }
 
+            const msg = msgMatch[1].trim();
+            const auth = authMatch[1].trim();
+            const time = timeMatch[1].trim();
+            const hash = hashMatch[1].trim();
+            const sig = sigMatch[1].replace(/\s+/g, '').trim(); // Remove any internal spaces or line breaks in signature
+
             const stringToSign = `${msg}|${auth}|${time}`;
             
-            // Re-verify hash and signature via CryptoCore
             const isValidHash = await CryptoCore.verifyMessageHash(stringToSign, hash);
             const isValidSig = await CryptoCore.verifySignature(stringToSign, sig);
 
