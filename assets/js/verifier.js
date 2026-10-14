@@ -13,25 +13,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Extract fields using robust regex parsing to handle wrapped lines
-            const msgMatch = rawText.match(/MSG:\s*([\s\S]*?)(?=\nAUTH:|$)/);
-            const authMatch = rawText.match(/AUTH:\s*([^\n]+)/);
-            const timeMatch = rawText.match(/TIME:\s*([^\n]+)/);
-            const hashMatch = rawText.match(/HASH:\s*([a-fA-F0-9]{64})/);
-            
-            // For signature, capture everything between SIG: and VERIFY:
-            const sigMatch = rawText.match(/SIG:\s*([\s\S]*?)(?=\nVERIFY:|$)/);
+            // Robust multi-line extraction
+            const lines = rawText.split('\n');
+            let msg = "", auth = "", time = "", hash = "", sig = "";
+            let currentField = null;
+            let msgLines = [], sigLines = [];
 
-            if (!msgMatch || !authMatch || !timeMatch || !hashMatch || !sigMatch) {
+            for (let line of lines) {
+                if (line.startsWith("MSG: ")) {
+                    currentField = "MSG";
+                    msgLines.push(line.substring(5));
+                } else if (line.startsWith("AUTH: ")) {
+                    currentField = "AUTH";
+                    auth = line.substring(6).trim();
+                } else if (line.startsWith("TIME: ")) {
+                    currentField = "TIME";
+                    time = line.substring(6).trim();
+                } else if (line.startsWith("HASH: ")) {
+                    currentField = "HASH";
+                    hash = line.substring(6).trim();
+                } else if (line.startsWith("SIG: ")) {
+                    currentField = "SIG";
+                    sigLines.push(line.substring(5));
+                } else if (line.startsWith("VERIFY: ")) {
+                    currentField = "VERIFY";
+                } else {
+                    if (currentField === "MSG") msgLines.push(line);
+                    else if (currentField === "SIG") sigLines.push(line);
+                }
+            }
+
+            msg = msgLines.join('\n').trim();
+            sig = sigLines.join('').trim();
+
+            if (!msg || !auth || !time || !hash || !sig) {
                 showResult(false, "Invalid block format. Missing required cryptographic parameters.");
                 return;
             }
-
-            const msg = msgMatch[1].trim();
-            const auth = authMatch[1].trim();
-            const time = timeMatch[1].trim();
-            const hash = hashMatch[1].trim();
-            const sig = sigMatch[1].replace(/\s+/g, '').trim(); // Remove any internal spaces or line breaks in signature
 
             const stringToSign = `${msg}|${auth}|${time}`;
             
