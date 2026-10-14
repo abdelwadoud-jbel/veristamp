@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const AUTH_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+    const AUTH_HASH = "72db19463cfa2a8fc2e1d76370cd6c8c49e7b23199c9c35d97034b7f83a00508";
 
     const lockScreen = document.getElementById('lock-screen');
     const generatorContainer = document.getElementById('generator-container');
