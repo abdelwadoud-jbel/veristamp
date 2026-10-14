@@ -52,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const decodedMessage = decodeBase64Utf8(fields.message);
             const issuedAt = new Date(fields.time);
             const now = new Date();
 
@@ -68,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             showResult(
                 true,
-                `Verified by ${fields.author}\nIssued: ${issuedAt.toUTCString()}\nID: ${fields.id}\n\n${decodedMessage}`
+                `✓ Signature Valid & Authentic!\nVerified by: ${fields.author}\nIssued: ${issuedAt.toUTCString()}\nID: ${fields.id}\n\nMessage Content:\n${fields.message}`
             );
         } catch (error) {
             console.error(error);
@@ -94,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
             switch (key) {
                 case "ID": result.id = value; break;
                 case "VER": result.version = value; break;
-                case "MSG-B64": result.message = value; break;
+                case "MSG": result.message = value; break; // قراءة النص الصريح مباشرة
                 case "AUTH": result.author = value; break;
                 case "TIME": result.time = value; break;
                 case "HASH": result.hash = value; break;
@@ -103,11 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         return result;
-    }
-
-    function decodeBase64Utf8(base64) {
-        const bytes = CryptoCore.base64ToBytes(base64);
-        return new TextDecoder().decode(bytes);
     }
 
     function showResult(success, message) {
