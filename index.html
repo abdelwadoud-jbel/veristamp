@@ -3,44 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VeriStamp | Message Verification Center</title>
+    <title>VeriStamp | Cryptographic Verification Center</title>
     <link rel="stylesheet" href="./assets/css/style.css">
     <script src="./assets/js/crypto-core.js" defer></script>
     <script src="./assets/js/verifier.js" defer></script>
 </head>
 <body>
 
-    <header>
+    <!-- Background Cyber Glow Effects -->
+    <div class="cyber-glow-1"></div>
+    <div class="cyber-glow-2"></div>
+
+    <header class="app-header">
         <div class="brand">
             <div class="brand-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
-            <span class="brand-title">VeriStamp</span>
+            <span class="brand-title">VeriStamp <small style="font-size: 0.65rem; opacity: 0.7; font-weight: 400; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 8px; margin-left: 4px;">v2.0 Secure</small></span>
+        </div>
+        <div class="header-badge">
+            <span class="pulse-dot"></span> Zero-Trust Node
         </div>
     </header>
 
-    <main>
-        <!-- Public Verification Portal Container -->
-        <div class="glass-card">
+    <main class="app-main">
+        <div class="glass-card verification-card">
             <div class="card-icon-wrapper">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </div>
+            
             <h1 class="card-title">Message Verification Center</h1>
-            <p class="card-subtitle">Paste a VeriStamp formatted message block below to cryptographically verify its authenticity.</p>
+            <p class="card-subtitle">Paste the complete VeriStamp cryptographic block below to verify its authenticity and ensure zero tampering.</p>
 
             <div class="input-group">
                 <label for="verify-input">Signed Message Block</label>
-                <textarea id="verify-input" class="control-item" rows="8" placeholder="[VeriStamp Secure Message v2]&#10;ID: ...&#10;VER: 2&#10;MSG-B64: ...&#10;AUTH: ABDELWADOUD JBEL (AJ)&#10;TIME: ...&#10;HASH: ...&#10;SIG: ...&#10;VERIFY: ..."></textarea>
+                <div class="textarea-wrapper">
+                    <textarea id="verify-input" class="control-item" rows="9" placeholder="[VeriStamp Secure Message v2]&#10;ID: ...&#10;VER: 2&#10;MSG: ...&#10;AUTH: ABDELWADOUD JBEL (AJ)&#10;TIME: ...&#10;HASH: ...&#10;SIG: ...&#10;VERIFY: ..."></textarea>
+                </div>
             </div>
 
-            <button id="verify-btn" class="btn-primary">Verify Cryptographic Signature</button>
+            <button id="verify-btn" class="btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Verify Cryptographic Signature
+            </button>
 
-            <div id="verify-result" class="error-alert hidden" style="margin-top: 1.5rem; text-align: left; word-break: break-all;"></div>
+            <!-- Result Box -->
+            <div id="verify-result" class="result-box hidden"></div>
         </div>
     </main>
 
-    <footer>
-        VeriStamp Cryptographic Engine &copy; 2026. <span>Zero-Trust Serverless 100%</span>
+    <footer class="app-footer">
+        <p>VeriStamp Cryptographic Engine &copy; 2026. Decentralized Cryptographic Validation.</p>
     </footer>
 
 </body>
