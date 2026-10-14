@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Robust multi-line extraction
             const lines = rawText.split('\n');
             let msg = "", auth = "", time = "", hash = "", sig = "";
             let currentField = null;
@@ -57,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const isValidSig = await CryptoCore.verifySignature(stringToSign, sig);
 
             if (isValidHash && isValidSig) {
-                showResult(true, "✓ Cryptographic Signature Valid & Authentic! Message is unmodified.");
+                showResult(true, `✓ Authenticated & Verified By: ${auth} — Message is intact and unmodified.`);
             } else {
                 showResult(false, "✗ Verification Failed! Signature or hash mismatch detected.");
             }
