@@ -1,5 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const AUTH_HASH = "72db19463cfa2a8fc2e1d76370cd6c8c49e7b23199c9c35d97034b7f83a00508";
+    const TARGET_PASS = "AJ2026";
+
+    async function hashString(str) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(str);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
     const lockScreen = document.getElementById('lock-screen');
     const generatorContainer = document.getElementById('generator-container');
@@ -9,12 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function verifyAuth(input) {
         try {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(input.trim());
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex === AUTH_HASH;
+            const inputClean = input.trim();
+            const inputHash = await hashString(inputClean);
+            const targetHash = await hashString(TARGET_PASS);
+            return inputHash === targetHash;
         } catch (e) {
             return false;
         }
