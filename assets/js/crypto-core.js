@@ -1,6 +1,15 @@
 class CryptoCore {
-    // ضع هنا المفتاح العام الذي سيولده sign-tool.html
-    static PUBLIC_KEY_JWK = null;
+    // المفتاح العام المعتمد لتوقيعات ECDSA P-256 الخاصة بك
+    static PUBLIC_KEY_JWK = {
+        "crv": "P-256",
+        "ext": true,
+        "key_ops": [
+            "verify"
+        ],
+        "kty": "EC",
+        "x": "oa8JoplcU17eLp3jM0U9WUrXkF-nxO_RwEJS2mC8Rig",
+        "y": "NAN15tf7mL3Wfd9oLCvaV0GpifR8w1AbYaOJ8295vtk"
+    };
 
     static encoder = new TextEncoder();
 
