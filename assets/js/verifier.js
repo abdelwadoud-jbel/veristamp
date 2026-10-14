@@ -86,21 +86,40 @@ document.addEventListener("DOMContentLoaded", () => {
             signature: ""
         };
 
-        for (const line of text.split(/\r?\n/)) {
-            const [key, ...rest] = line.split(": ");
-            const value = rest.join(": ").trim();
+        const lines = text.split(/\r?\n/);
+        let currentKey = null;
+        let messageLines = [];
 
-            switch (key) {
-                case "ID": result.id = value; break;
-                case "VER": result.version = value; break;
-                case "MSG": result.message = value; break; // قراءة النص الصريح مباشرة
-                case "AUTH": result.author = value; break;
-                case "TIME": result.time = value; break;
-                case "HASH": result.hash = value; break;
-                case "SIG": result.signature = value; break;
+        for (let line of lines) {
+            // التحقق مما إذا كانت السطر يبدأ بمفتاح جديد معروف
+            const match = line.match(/^(ID|VER|MSG|AUTH|TIME|HASH|SIG|VERIFY): (.*)$/);
+            
+            if (match) {
+                currentKey = match[1];
+                const value = match[2];
+
+                if (currentKey === "MSG") {
+                    messageLines = [value];
+                } else if (currentKey === "ID") {
+                    result.id = value;
+                } else if (currentKey === "VER") {
+                    result.version = value;
+                } else if (currentKey === "AUTH") {
+                    result.author = value;
+                } else if (currentKey === "TIME") {
+                    result.time = value;
+                } else if (currentKey === "HASH") {
+                    result.hash = value;
+                } else if (currentKey === "SIG") {
+                    result.signature = value;
+                }
+            } else if (currentKey === "MSG") {
+                // إذا كنا داخل حقل الرسالة وهذا سطر جديد تكميلي للرسالة
+                messageLines.push(line);
             }
         }
 
+        result.message = messageLines.join("\n").trim();
         return result;
     }
 
@@ -108,15 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
         verifyResult.textContent = message;
         verifyResult.classList.remove("hidden");
 
-        verifyResult.style.background = success
-            ? "rgba(16, 185, 129, 0.1)"
-            : "rgba(239, 68, 68, 0.1)";
-
-        verifyResult.style.borderColor = success
-            ? "rgba(16, 185, 129, 0.2)"
-            : "rgba(239, 68, 68, 0.2)";
-
-        verifyResult.style.color = success ? "#34d399" : "#f87171";
+        verifyResult.className = "result-box " + (success ? "success" : "error");
         verifyResult.style.whiteSpace = "pre-wrap";
         verifyResult.style.textAlign = "left";
     }
