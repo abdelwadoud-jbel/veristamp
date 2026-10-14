@@ -1,8 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // هذا هو "هاش SHA-256" الخاص بكلمة المرور الخاصة بك (مثلاً كلمة المرور هنا هي: AJ2026)
-    // الهاش أدناه يمثل كلمة المرور "AJ2026" ولا يمكن لأحد معرفة كلمة المرور من خلاله أبداً.
-    const CORRECT_PIN_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"; 
-    // ملاحظة: إذا أردت تغيير كلمة المرور، يمكنك حساب هاش الكلمة الجديدة ووضعه هنا.
+    const AUTH_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
 
     const lockScreen = document.getElementById('lock-screen');
     const generatorContainer = document.getElementById('generator-container');
@@ -10,19 +7,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const passwordInput = document.getElementById('master-password');
     const lockError = document.getElementById('lock-error');
 
-    async function verifyPin(inputPin) {
+    async function verifyAuth(input) {
         const encoder = new TextEncoder();
-        const data = encoder.encode(inputPin);
+        const data = encoder.encode(input);
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        return hashHex === CORRECT_PIN_HASH;
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('') === AUTH_HASH;
     }
 
     if (unlockBtn) {
         unlockBtn.addEventListener('click', async () => {
             const inputVal = passwordInput.value.trim();
-            const isValid = await verifyPin(inputVal);
+            const isValid = await verifyAuth(inputVal);
             if (isValid) {
                 lockScreen.classList.add('hidden');
                 generatorContainer.classList.remove('hidden');
@@ -51,18 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (authorInput.includes("AJ")) authorInput = "AJ";
 
             const messageInput = document.getElementById('message-input');
-            // تنظيف النص وتوحيد الأسطر لمنع أي تضارب بين الهاتف والحاسوب
             const rawMessage = messageInput ? DOMPurify.sanitize(messageInput.value.trim().replace(/\r\n/g, '\n')) : "";
 
             if (!rawMessage) {
                 if (errorText && errorDiv) {
-                    errorText.textContent = "يرجى إدخال نص الرسالة أولاً.";
+                    errorText.textContent = "Please enter a message.";
                     errorDiv.classList.remove('hidden');
                 }
                 return;
             }
 
-            // توقيت UTC موحد ودقيق عالمياً لا يتأثر بنوع الجهاز
             const now = new Date();
             const year = now.getUTCFullYear();
             const month = String(now.getUTCMonth() + 1).padStart(2, '0');
@@ -75,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const hashSig = await CryptoCore.hashMessage(stringToSign);
             const digitalSig = await CryptoCore.signData(stringToSign);
-            const verifyUrl = `${window.location.origin}/verify.html`;
+            const verifyUrl = `${window.location.origin}/veristamp/verify.html`;
 
             const formattedText = `[VeriStamp Secure Message]
 MSG: ${rawMessage}
@@ -89,7 +83,6 @@ VERIFY: ${verifyUrl}`;
             document.getElementById('output-section').classList.remove('hidden');
         } catch (err) {
             console.error(err);
-            alert("حدث خطأ أثناء التوليد.");
         }
     });
 
@@ -98,7 +91,6 @@ VERIFY: ${verifyUrl}`;
         copyBtn.addEventListener('click', () => {
             const text = document.getElementById('final-output').textContent;
             navigator.clipboard.writeText(text);
-            alert("تم نسخ التوقيع بنجاح!");
         });
     }
 });
