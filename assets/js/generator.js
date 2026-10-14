@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const AUTH_HASH = "e6d8a263db10e3034f0c436b1d1cb58e458ff626966144e31536b1139e557b4f";
+    const AUTH_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
 
     const lockScreen = document.getElementById('lock-screen');
     const generatorContainer = document.getElementById('generator-container');
@@ -8,16 +8,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const lockError = document.getElementById('lock-error');
 
     async function verifyAuth(input) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(input);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('') === AUTH_HASH;
+        try {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input.trim());
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex === AUTH_HASH;
+        } catch (e) {
+            return false;
+        }
     }
 
     if (unlockBtn) {
         unlockBtn.addEventListener('click', async () => {
-            const inputVal = passwordInput.value.trim();
+            const inputVal = passwordInput.value;
             const isValid = await verifyAuth(inputVal);
             if (isValid) {
                 lockScreen.classList.add('hidden');
