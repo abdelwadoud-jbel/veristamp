@@ -54,8 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (errorDiv) errorDiv.classList.add('hidden');
 
             const authorSelect = document.getElementById('author-input');
-            let authorInput = authorSelect ? authorSelect.value.trim() : "AJ";
-            if (authorInput.includes("AJ")) authorInput = "AJ";
+            const authorInput = authorSelect ? authorSelect.value.trim() : "ABDELWADOUD JBEL (AJ)";
 
             const messageInput = document.getElementById('message-input');
             const rawMessage = messageInput ? DOMPurify.sanitize(messageInput.value.trim().replace(/\r\n/g, '\n')) : "";
