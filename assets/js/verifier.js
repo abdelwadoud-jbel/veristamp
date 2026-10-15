@@ -53,15 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const issuedAt = new Date(fields.time);
-            const now = new Date();
-
             if (isNaN(issuedAt.getTime())) {
                 showResult(false, "Verification failed: invalid timestamp.");
-                return;
-            }
-
-            if (issuedAt.getTime() > now.getTime() + 5 * 60 * 1000) {
-                showResult(false, "Verification failed: timestamp is in the future.");
                 return;
             }
 
@@ -91,7 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
         let messageLines = [];
 
         for (let line of lines) {
-            // التحقق مما إذا كانت السطر يبدأ بمفتاح جديد معروف
             const match = line.match(/^(ID|VER|MSG|AUTH|TIME|HASH|SIG|VERIFY): (.*)$/);
             
             if (match) {
@@ -114,7 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     result.signature = value;
                 }
             } else if (currentKey === "MSG") {
-                // إذا كنا داخل حقل الرسالة وهذا سطر جديد تكميلي للرسالة
                 messageLines.push(line);
             }
         }
@@ -126,7 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function showResult(success, message) {
         verifyResult.textContent = message;
         verifyResult.classList.remove("hidden");
-
         verifyResult.className = "result-box " + (success ? "success" : "error");
         verifyResult.style.whiteSpace = "pre-wrap";
         verifyResult.style.textAlign = "left";
