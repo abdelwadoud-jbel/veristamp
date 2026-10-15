@@ -10,7 +10,6 @@
 </head>
 <body>
 
-    <!-- Background Cyber Glow Effects -->
     <div class="cyber-glow-1"></div>
     <div class="cyber-glow-2"></div>
 
@@ -19,7 +18,7 @@
             <div class="brand-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
-            <span class="brand-title">VeriStamp <small style="font-size: 0.65rem; opacity: 0.7; font-weight: 400; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 8px; margin-left: 4px;">v2.0 Secure</small></span>
+            <span class="brand-title">VeriStamp <small style="font-size: 0.65rem; opacity: 0.7; font-weight: 400; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 8px; margin-left: 4px;">v2.1 Secure</small></span>
         </div>
         <div class="header-badge">
             <span class="pulse-dot"></span> Zero-Trust Node
@@ -32,14 +31,21 @@
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </div>
             
-            <h1 class="card-title">Message Verification Center</h1>
-            <p class="card-subtitle">Paste the complete VeriStamp cryptographic block below to verify its authenticity and ensure zero tampering.</p>
+            <h1 class="card-title">Message & File Verification Center</h1>
+            <p class="card-subtitle">Paste the VeriStamp cryptographic block below. If it's a file verification block, upload the corresponding file to verify its integrity.</p>
 
             <div class="input-group">
-                <label for="verify-input">Signed Message Block</label>
+                <label for="verify-input">Signed VeriStamp Block</label>
                 <div class="textarea-wrapper">
-                    <textarea id="verify-input" class="control-item" rows="9" placeholder="[VeriStamp Secure Message v2]&#10;ID: ...&#10;VER: 2&#10;MSG: ...&#10;AUTH: ABDELWADOUD JBEL (AJ)&#10;TIME: ...&#10;HASH: ...&#10;SIG: ...&#10;VERIFY: ..."></textarea>
+                    <textarea id="verify-input" class="control-item" rows="8" placeholder="Paste signed block here..."></textarea>
                 </div>
+            </div>
+
+            <!-- Dynamic File Upload Container (Appears if File Block is detected) -->
+            <div id="file-upload-container" class="input-group hidden" style="background: rgba(99, 102, 241, 0.05); padding: 1rem; border-radius: 12px; border: 1px dashed rgba(99, 102, 241, 0.3);">
+                <label for="verify-file-input" style="color: #818cf8;">Attach Target File for Integrity Check</label>
+                <input type="file" id="verify-file-input" class="control-item" style="padding: 0.5rem; background: #05070d; cursor: pointer;">
+                <div id="verify-file-name" style="font-size: 0.8rem; color: #34d399; margin-top: 0.4rem;"></div>
             </div>
 
             <button id="verify-btn" class="btn-primary">
@@ -47,7 +53,6 @@
                 Verify Cryptographic Signature
             </button>
 
-            <!-- Result Box -->
             <div id="verify-result" class="result-box hidden"></div>
         </div>
     </main>
